@@ -15,7 +15,7 @@ return {
     },
     {
       '<leader>cs',
-      ':Trouble symbol toggle focus=false<cr>',
+      ':Trouble symbols toggle focus=false<cr>',
       desc = 'Symbols (Trouble)',
     },
     {
