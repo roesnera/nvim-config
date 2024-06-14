@@ -191,6 +191,162 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
+-- Custom keymaps!
+
+vim.keymap.set('n', '<leader>jt', function()
+  vim.cmd 'normal! [{'
+end, { desc = '[J]ump to the [t]op of the current block', silent = true, noremap = true })
+vim.keymap.set('n', '<leader>jb', function()
+  vim.cmd 'normal! ]}'
+end, { desc = '[J]ump to the [b]ottom of the current block', silent = true, noremap = true })
+
+local function is_fold_on_current_line()
+  local current_line = vim.fn.line '.'
+  local fold_level = vim.fn.foldlevel(current_line)
+
+  if fold_level > 0 then
+    return true
+  else
+    return false
+  end
+end
+
+local function get_fn_end()
+  local ts_utils = require 'nvim-treesitter.ts_utils'
+  local current_node = ts_utils.get_node_at_cursor()
+
+  if not current_node then
+    return nil
+  end
+
+  local block_node = current_node
+  while block_node do
+    if block_node:type() == 'function' then
+      break
+    end
+
+    local parent_node = block_node:parent()
+    if not parent_node then
+      break
+    end
+
+    block_node = parent_node
+  end
+
+  local end_row, _ = block_node:end_()
+  return end_row + 1
+end
+
+local function is_fn_fold()
+  local current_line_num = vim.fn.line '.'
+  local end_line_num = vim.fn.foldclosedend(current_line_num)
+  if end_line_num == get_fn_end() then
+    return true
+  end
+  return false
+end
+
+local function toggle_fold()
+  vim.cmd 'normal! za'
+end
+
+local function fold_fn()
+  -- Get the current line
+  local line = vim.fn.getline '.'
+  -- Get the column number of the cursor
+  local col = vim.fn.col '.'
+  -- Get the character under the cursor
+  local char = line:sub(col, col)
+
+  if is_fold_on_current_line() then
+    if is_fn_fold() then
+      toggle_fold()
+      return
+    end
+  end
+  -- Check the character and execute different commands based on the condition
+  if char == '{' then
+    vim.cmd 'normal! zf%'
+  else
+    vim.cmd 'normal! f{zf%'
+  end
+end
+
+local function toggle_or_create_function_fold()
+  local ts_utils = require 'nvim-treesitter.ts_utils'
+  local current_node = ts_utils.get_node_at_cursor()
+
+  if not current_node then
+    return
+  end
+
+  local function_node = current_node
+  while function_node do
+    if function_node:type() == 'function' then
+      break
+    end
+    local parent_node = function_node:parent()
+    if not parent_node then
+      break
+    end
+
+    function_node = parent_node
+  end
+
+  if not function_node then
+    return
+  end
+
+  local start_row, start_col, end_row, end_col = function_node:range()
+  local fold_start = vim.fn.foldclosed(start_row + 1)
+  local fold_end = vim.fn.foldclosedend(start_row + 1)
+
+  if fold_start ~= -1 and fold_end == end_row + 1 then
+    vim.cmd 'normal! zd'
+  else
+    vim.api.nvim_win_set_cursor(0, { start_row + 1, start_col })
+    vim.cmd 'normal! zf%'
+  end
+end
+
+vim.keymap.set('n', 'zfe', function()
+  local current_line = vim.fn.getline '.'
+  if current_line:find 'function' then
+    fold_fn()
+    return
+  elseif current_line:find '=>' then
+    fold_fn()
+    return
+  end
+  -- Get the current line num
+  local current_line_num = vim.fn.line '.'
+
+  local fn_above = false
+  local line_of_fn = 0
+  for line_num = current_line_num - 1, 1, -1 do
+    local current = vim.fn.getline(line_num)
+    local function_start = current:find 'function'
+    local fat_arrow_start = current:find '=>'
+
+    if function_start or fat_arrow_start then
+      fn_above = true
+      line_of_fn = line_num
+      break
+    end
+  end
+
+  if fn_above then
+    vim.cmd(string.format('normal! %sG', line_of_fn))
+    fold_fn()
+  else
+    print 'No occurrence of the keyword "function" or fat arrow found above cursor'
+  end
+end, { desc = '[F]old [e]ncolsing block', silent = true, noremap = true })
+
+vim.keymap.set('n', 'zff', function()
+  fold_fn()
+end, { desc = '[F]old [f]unction on current line', silent = true, noremap = true })
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -669,6 +825,14 @@ require('lazy').setup({
         mode = '',
         desc = '[F]ormat buffer',
       },
+      {
+        '<leader>lf',
+        function()
+          require('conform').list_formatters(0)
+        end,
+        mode = '',
+        desc = '[L]ists [F]ormatters for current buffer',
+      },
     },
     opts = {
       notify_on_error = false,
@@ -693,8 +857,9 @@ require('lazy').setup({
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        -- You can use a sub-list to tell conform to run *until* a formatter
+        -- is found.
+        javascript = { { 'eslint_d', 'prettierd' } },
       },
     },
   },
