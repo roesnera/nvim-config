@@ -119,6 +119,7 @@ vim.schedule(function()
   vim.opt.clipboard = 'unnamedplus'
 end)
 
+
 -- Enable break indent
 vim.opt.breakindent = true
 
@@ -347,8 +348,8 @@ vim.keymap.set('n', 'zff', function()
   fold_fn()
 end, { desc = '[F]old [f]unction on current line', silent = true, noremap = true })
 
-vim.keymap.set('v', '>', '>gv')
-vim.keymap.set('v', '<', '<gv')
+vim.keymap.set('v', '>', '>gv', { desc = 'Increase indent of current line' })
+vim.keymap.set('v', '<', '<gv', { desc = 'Decrease indent of current line' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
