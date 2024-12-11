@@ -162,12 +162,15 @@ vim.opt.scrolloff = 10
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
+local map = vim.keymap.set
+local unmap = vim.keymap.del
+
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
-vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+map('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+map('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -175,7 +178,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 --
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+-- map('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
@@ -188,18 +191,21 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 --
 --  See `:help wincmd` for a list of all window commands
 vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+map('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
+map('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
+map('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
--- Custom keymaps!
+--#region Custom keymaps!
 
-vim.keymap.set('n', '<leader>jt', function()
+map('n', '<leader>jt', function()
   vim.cmd 'normal! [{'
 end, { desc = '[J]ump to the [t]op of the current block', silent = true, noremap = true })
-vim.keymap.set('n', '<leader>jb', function()
+map('n', '<leader>jb', function()
   vim.cmd 'normal! ]}'
 end, { desc = '[J]ump to the [b]ottom of the current block', silent = true, noremap = true })
+
+require('html-modifier').setup()
+map('n', '<leader>mi', require('html-modifier').modify_element)
 
 local function is_fold_on_current_line()
   local current_line = vim.fn.line '.'
@@ -310,7 +316,7 @@ local function toggle_or_create_function_fold()
   end
 end
 
-vim.keymap.set('n', 'zfe', function()
+map('n', 'zfe', function()
   local current_line = vim.fn.getline '.'
   if current_line:find 'function' then
     fold_fn()
@@ -344,12 +350,13 @@ vim.keymap.set('n', 'zfe', function()
   end
 end, { desc = '[F]old [e]ncolsing block', silent = true, noremap = true })
 
-vim.keymap.set('n', 'zff', function()
+map('n', 'zff', function()
   fold_fn()
 end, { desc = '[F]old [f]unction on current line', silent = true, noremap = true })
 
-vim.keymap.set('v', '>', '>gv', { desc = 'Increase indent of current line' })
-vim.keymap.set('v', '<', '<gv', { desc = 'Decrease indent of current line' })
+map('v', '>', '>gv', { desc = 'Increase indent of current line' })
+map('v', '<', '<gv', { desc = 'Decrease indent of current line' })
+--#endregion
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -564,19 +571,19 @@ require('lazy').setup({
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
-      vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
-      vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
-      vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
-      vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
-      vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
-      vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
-      vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
-      vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
-      vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-      vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      map('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
+      map('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
+      map('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
+      map('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
+      map('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
+      map('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
+      map('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
+      map('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
+      map('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
+      map('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
       -- Slightly advanced example of overriding default behavior and theme
-      vim.keymap.set('n', '<leader>/', function()
+      map('n', '<leader>/', function()
         -- You can pass additional configuration to Telescope to change the theme, layout, etc.
         builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
           winblend = 10,
@@ -586,7 +593,7 @@ require('lazy').setup({
 
       -- It's also possible to pass additional configuration options.
       --  See `:help telescope.builtin.live_grep()` for information about particular keys
-      vim.keymap.set('n', '<leader>s/', function()
+      map('n', '<leader>s/', function()
         builtin.live_grep {
           grep_open_files = true,
           prompt_title = 'Live Grep in Open Files',
@@ -594,7 +601,7 @@ require('lazy').setup({
       end, { desc = '[S]earch [/] in Open Files' })
 
       -- Shortcut for searching your Neovim configuration files
-      vim.keymap.set('n', '<leader>sn', function()
+      map('n', '<leader>sn', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
       end, { desc = '[S]earch [N]eovim files' })
     end,
@@ -677,7 +684,7 @@ require('lazy').setup({
           -- for LSP related items. It sets the mode, buffer and description for us each time.
           local map = function(keys, func, desc, mode)
             mode = mode or 'n'
-            vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+            map(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
           end
 
           -- Jump to the definition of the word under your cursor.
@@ -1129,6 +1136,36 @@ require('lazy').setup({
     },
   },
 })
+
+--#region ToggleTerm related keymaps
+local Terminal = require("toggleterm.terminal").Terminal
+
+local mainTerm = Terminal:new({ direction = "horizontal", id = 1, on_open = function ()
+  map("t", "<c-q>", "<c-\\><c-n>", { desc = "Terminal normal mode" })
+  map("t", "<C-k>", "<C-\\><C-n><C-w><C-k>", { desc = "Switch to window above" })
+  map("t", "<C-j>", "<C-\\><C-n><C-w><C-j>", { desc = "Switch to window below" })
+  map("t", "<C-h>", "<C-\\><C-n><C-w><C-h>", { desc = "Switch to window to left" })
+  map("t", "<C-l>", "<C-\\><C-n><C-w><C-l>", { desc = "Switch to window to right" })
+  map('t', '<Esc><Esc>', '<C-\\><C-n>:q<CR>', { desc = 'Kill terminal' })
+end
+})
+local lazygitTerm = Terminal:new({ cmd = "lazygit", direction = "float", id = 2, on_open = function (term)
+  if vim.fn.maparg("<esc><esc>", "t") ~= "" then
+    unmap("t", "<esc><esc>")
+  end
+end, on_close = function (term)
+  if not vim.fn.maparg("<esc>", "t") == "" then
+    map("t", "<esc><esc>", "<C-\\><C-n>:q<CR>", { desc = "Kill terminal" })
+  end
+end })
+map('n', '<leader>tt', function ()
+  mainTerm:toggle()
+end, { desc = '[T]oggle the main [t]erminal', silent = true, noremap = true })
+
+map('n', '<leader>tl', function ()
+  lazygitTerm:toggle()
+end, { desc = '[T]oggle the [l]azygit terminal', silent = true, noremap = true })
+--#endregion
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
