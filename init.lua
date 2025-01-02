@@ -563,6 +563,20 @@ require('lazy').setup({
             require('telescope.themes').get_dropdown(),
           },
         },
+        pickers = {
+          buffers = {
+            show_all_buffers = true,
+            sort_lastused = true,
+            mappings = {
+              i = {
+                ["<c-d"] = "delete_buffer",
+              },
+              n = {
+                ["d"] = "delete_buffer",
+              }
+            }
+          }
+        }
       }
 
       -- Enable Telescope extensions if they are installed
