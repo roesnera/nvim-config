@@ -19,7 +19,7 @@ return {
     {
       '<leader>se',
       ':ScissorsEditSnippet<CR>',
-      desc = '[E]dd a [s]nippet',
+      desc = '[E]dit a [s]nippet',
     },
   },
 }

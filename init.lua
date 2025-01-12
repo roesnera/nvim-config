@@ -204,8 +204,15 @@ map('n', '<leader>jb', function()
   vim.cmd 'normal! ]}'
 end, { desc = '[J]ump to the [b]ottom of the current block', silent = true, noremap = true })
 
-require('html-modifier').setup()
-map('n', '<leader>mi', require('html-modifier').modify_element)
+local html_modifier = require('html-modifier')
+
+html_modifier.setup()
+map('n', '<leader>pn', html_modifier.parse_current_element, { desc = 'parse current element' })
+
+P = function(v)
+  print(vim.inspect(v))
+  return v
+end
 
 local function is_fold_on_current_line()
   local current_line = vim.fn.line '.'
@@ -582,10 +589,12 @@ require('lazy').setup({
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
+      pcall(require('telescope').load_extension, 'harpoon')
+      pcall(map, 'n', '<leader>sh', ':Telescope harpoon marks<CR>', { desc = '[S]earch [h]arpoon marks' })
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
-      map('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
+      map('n', '<leader>sH', builtin.help_tags, { desc = '[S]earch [H]elp' })
       map('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       map('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
       map('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
@@ -1081,6 +1090,9 @@ require('lazy').setup({
     --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
+  {
+    'nvim-treesitter',
+  },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
@@ -1113,6 +1125,10 @@ require('lazy').setup({
       { '<c-l>', '<cmd><C-U>TmuxNavigateRight<cr>' },
       { '<c-\\>', '<cmd><C-U>TmuxNavigatePrevious<cr>' },
     },
+  },
+  {
+    'nvim-treesitter/playground',
+    event = "BufRead",
   },
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
