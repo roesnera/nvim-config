@@ -805,6 +805,7 @@ require('lazy').setup({
         angularls = {},
         dockerls = {},
         html = {},
+        ast_grep = {},
 
         lua_ls = {
           Lua = {
@@ -1160,17 +1161,34 @@ require('lazy').setup({
 })
 
 --#region ToggleTerm related keymaps
+local plenaryWindow = require("plenary.window.float")
 local Terminal = require("toggleterm.terminal").Terminal
 
-local mainTerm = Terminal:new({ direction = "horizontal", id = 1, on_open = function ()
-  map("t", "<c-q>", "<c-\\><c-n>", { desc = "Terminal normal mode" })
-  map("t", "<C-k>", "<C-\\><C-n><C-w><C-k>", { desc = "Switch to window above" })
-  map("t", "<C-j>", "<C-\\><C-n><C-w><C-j>", { desc = "Switch to window below" })
-  map("t", "<C-h>", "<C-\\><C-n><C-w><C-h>", { desc = "Switch to window to left" })
-  map("t", "<C-l>", "<C-\\><C-n><C-w><C-l>", { desc = "Switch to window to right" })
-  map('t', '<Esc><Esc>', '<C-\\><C-n>:q<CR>', { desc = 'Kill terminal' })
+local terminalMap = {}
+
+local function newNormalTerm(id, name, on_close_fn)
+  return { direction = "horizontal", id = id, display_name = name, on_open = function ()
+    map("t", "<c-q>", "<c-\\><c-n>", { desc = "Terminal normal mode" })
+    map("t", "<C-k>", "<C-\\><C-n><C-w><C-k>", { desc = "Switch to window above" })
+    map("t", "<C-j>", "<C-\\><C-n><C-w><C-j>", { desc = "Switch to window below" })
+    map("t", "<C-h>", "<C-\\><C-n><C-w><C-h>", { desc = "Switch to window to left" })
+    map("t", "<C-l>", "<C-\\><C-n><C-w><C-l>", { desc = "Switch to window to right" })
+    map('t', '<Esc><Esc>', '<C-\\><C-n>:q<CR>', { desc = 'Kill terminal' })
+  end, on_close = on_close_fn, close_on_exit = true }
 end
-})
+
+local function closeAndClean(term)
+  local id = term.id
+  terminalMap[id] = nil
+end
+
+local function getFirstNil()
+  local ind = #terminalMap
+  return ind + 1
+end
+
+local mainTerm = Terminal:new(newNormalTerm(1, "Main Term"))
+terminalMap[1] = mainTerm
 local lazygitTerm = Terminal:new({ cmd = "lazygit", direction = "float", id = 2, on_open = function (term)
   if vim.fn.maparg("<esc><esc>", "t") ~= "" then
     unmap("t", "<esc><esc>")
@@ -1179,7 +1197,8 @@ end, on_close = function (term)
   if not vim.fn.maparg("<esc>", "t") == "" then
     map("t", "<esc><esc>", "<C-\\><C-n>:q<CR>", { desc = "Kill terminal" })
   end
-end })
+end, display_name = "Lazygit Term" })
+terminalMap[2] = lazygitTerm
 map('n', '<leader>tt', function ()
   mainTerm:toggle()
 end, { desc = '[T]oggle the main [t]erminal', silent = true, noremap = true })
@@ -1187,6 +1206,36 @@ end, { desc = '[T]oggle the main [t]erminal', silent = true, noremap = true })
 map('n', '<leader>tl', function ()
   lazygitTerm:toggle()
 end, { desc = '[T]oggle the [l]azygit terminal', silent = true, noremap = true })
+
+local postingTerm = Terminal:new({ cmd = "posting", direction = "float", id = 3, display_name = "Posting Term" })
+terminalMap[3] = postingTerm
+
+map('n', '<leader>tp', function ()
+  postingTerm:toggle()
+end, { desc = '[T]oggle the [p]osting terminal', silent = true, noremap = true })
+
+map('n', '<leader>tn', function()
+  local newTermId = getFirstNil()
+  local newTermName = string.format("Regular Terminal %d", newTermId)
+  print(newTermName)
+  local newTerm = newNormalTerm(newTermId, newTermName, closeAndClean)
+  Terminal:new(newTerm):open()
+  terminalMap[newTermId] = newTerm
+end, { desc = '[T]oggle a [n]ew terminal', silent = true, noremap = true })
+
+map('n', '<leader>to', function ()
+  local plenTable = plenaryWindow.centered({
+    width = math.floor(vim.api.nvim_get_option_value("columns", {}) * 0.6),
+    height = math.floor(vim.api.nvim_get_option_value("lines", {}) * 0.4),
+    border = "rounded"
+  })
+  local buf = plenTable.bufnr
+  local terminalMapArr = {}
+  for index, value in ipairs(terminalMap) do
+    terminalMapArr[index] = string.format("Index: %d, value: %s", index, value.display_name)
+  end
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, terminalMapArr)
+end, { desc = 'Display [t]erminals [o]pened', silent = true, noremap = true })
 --#endregion
 
 -- The line beneath this is called `modeline`. See `:help modeline`
