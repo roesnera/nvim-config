@@ -1245,5 +1245,7 @@ map('n', '<leader>to', function()
 end, { desc = 'Display [t]erminals [o]pened', silent = true, noremap = true })
 --#endregion
 
+vim.api.nvim_create_user_command('O', 'Oil', {})
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
