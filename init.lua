@@ -119,7 +119,6 @@ vim.schedule(function()
   vim.opt.clipboard = 'unnamedplus'
 end)
 
-
 -- Enable break indent
 vim.opt.breakindent = true
 
@@ -169,9 +168,6 @@ local unmap = vim.keymap.del
 --  See `:help hlsearch`
 map('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
--- Diagnostic keymaps
-map('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
-
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -203,11 +199,6 @@ end, { desc = '[J]ump to the [t]op of the current block', silent = true, noremap
 map('n', '<leader>jb', function()
   vim.cmd 'normal! ]}'
 end, { desc = '[J]ump to the [b]ottom of the current block', silent = true, noremap = true })
-
-local html_modifier = require('html-modifier')
-
-html_modifier.setup()
-map('n', '<leader>pn', html_modifier.parse_current_element, { desc = 'parse current element' })
 
 P = function(v)
   print(vim.inspect(v))
@@ -448,7 +439,7 @@ require('lazy').setup({
   -- after the plugin has been loaded:
   --  config = function() ... end
 
-  { -- Useful plugin to show you pending keybinds.
+  {                     -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     opts = {
@@ -491,7 +482,7 @@ require('lazy').setup({
 
       -- Document existing key chains
       spec = {
-        { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
+        { '<leader>c', group = '[C]ode',     mode = { 'n', 'x' } },
         { '<leader>d', group = '[D]ocument' },
         { '<leader>r', group = '[R]ename' },
         { '<leader>s', group = '[S]earch' },
@@ -531,7 +522,7 @@ require('lazy').setup({
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+      { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -576,14 +567,14 @@ require('lazy').setup({
             sort_lastused = true,
             mappings = {
               i = {
-                ["<c-d"] = "delete_buffer",
+                ['<c-d'] = 'delete_buffer',
               },
               n = {
-                ["d"] = "delete_buffer",
-              }
-            }
-          }
-        }
+                ['d'] = 'delete_buffer',
+              },
+            },
+          },
+        },
       }
 
       -- Enable Telescope extensions if they are installed
@@ -643,7 +634,7 @@ require('lazy').setup({
       },
     },
   },
-  { 'Bilal2453/luvit-meta', lazy = true },
+  { 'Bilal2453/luvit-meta',     lazy = true },
   {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
@@ -655,7 +646,7 @@ require('lazy').setup({
 
       -- Useful status updates for LSP.
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', opts = {} },
+      { 'j-hui/fidget.nvim',       opts = {} },
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
@@ -832,6 +823,8 @@ require('lazy').setup({
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
+        ensure_installed = { 'gopls', 'pyright', 'rust_analyzer', 'angularls', 'dockerls', 'html', 'ast_grep', 'lua_ls' },
+        automatic_installation = true,
         handlers = {
           function(server_name)
             local server = servers[server_name] or {}
@@ -1120,16 +1113,16 @@ require('lazy').setup({
       'TmuxNavigatePrevious',
     },
     keys = {
-      { '<c-h>', '<cmd><C-U>TmuxNavigateLeft<cr>' },
-      { '<c-j>', '<cmd><C-U>TmuxNavigateDown<cr>' },
-      { '<c-k>', '<cmd><C-U>TmuxNavigateUp<cr>' },
-      { '<c-l>', '<cmd><C-U>TmuxNavigateRight<cr>' },
+      { '<c-h>',  '<cmd><C-U>TmuxNavigateLeft<cr>' },
+      { '<c-j>',  '<cmd><C-U>TmuxNavigateDown<cr>' },
+      { '<c-k>',  '<cmd><C-U>TmuxNavigateUp<cr>' },
+      { '<c-l>',  '<cmd><C-U>TmuxNavigateRight<cr>' },
       { '<c-\\>', '<cmd><C-U>TmuxNavigatePrevious<cr>' },
     },
   },
   {
     'nvim-treesitter/playground',
-    event = "BufRead",
+    event = 'BufRead',
   },
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
@@ -1161,20 +1154,27 @@ require('lazy').setup({
 })
 
 --#region ToggleTerm related keymaps
-local plenaryWindow = require("plenary.window.float")
-local Terminal = require("toggleterm.terminal").Terminal
+local plenaryWindow = require 'plenary.window.float'
+local Terminal = require('toggleterm.terminal').Terminal
 
 local terminalMap = {}
 
 local function newNormalTerm(id, name, on_close_fn)
-  return { direction = "horizontal", id = id, display_name = name, on_open = function ()
-    map("t", "<c-q>", "<c-\\><c-n>", { desc = "Terminal normal mode" })
-    map("t", "<C-k>", "<C-\\><C-n><C-w><C-k>", { desc = "Switch to window above" })
-    map("t", "<C-j>", "<C-\\><C-n><C-w><C-j>", { desc = "Switch to window below" })
-    map("t", "<C-h>", "<C-\\><C-n><C-w><C-h>", { desc = "Switch to window to left" })
-    map("t", "<C-l>", "<C-\\><C-n><C-w><C-l>", { desc = "Switch to window to right" })
-    map('t', '<Esc><Esc>', '<C-\\><C-n>:q<CR>', { desc = 'Kill terminal' })
-  end, on_close = on_close_fn, close_on_exit = true }
+  return {
+    direction = 'horizontal',
+    id = id,
+    display_name = name,
+    on_open = function()
+      map('t', '<c-q>', '<c-\\><c-n>', { desc = 'Terminal normal mode' })
+      map('t', '<C-k>', '<C-\\><C-n><C-w><C-k>', { desc = 'Switch to window above' })
+      map('t', '<C-j>', '<C-\\><C-n><C-w><C-j>', { desc = 'Switch to window below' })
+      map('t', '<C-h>', '<C-\\><C-n><C-w><C-h>', { desc = 'Switch to window to left' })
+      map('t', '<C-l>', '<C-\\><C-n><C-w><C-l>', { desc = 'Switch to window to right' })
+      map('t', '<Esc><Esc>', '<C-\\><C-n>:q<CR>', { desc = 'Kill terminal' })
+    end,
+    on_close = on_close_fn,
+    close_on_exit = true,
+  }
 end
 
 local function closeAndClean(term)
@@ -1187,52 +1187,59 @@ local function getFirstNil()
   return ind + 1
 end
 
-local mainTerm = Terminal:new(newNormalTerm(1, "Main Term"))
+local mainTerm = Terminal:new(newNormalTerm(1, 'Main Term'))
 terminalMap[1] = mainTerm
-local lazygitTerm = Terminal:new({ cmd = "lazygit", direction = "float", id = 2, on_open = function (term)
-  if vim.fn.maparg("<esc><esc>", "t") ~= "" then
-    unmap("t", "<esc><esc>")
-  end
-end, on_close = function (term)
-  if not vim.fn.maparg("<esc>", "t") == "" then
-    map("t", "<esc><esc>", "<C-\\><C-n>:q<CR>", { desc = "Kill terminal" })
-  end
-end, display_name = "Lazygit Term" })
+local lazygitTerm = Terminal:new {
+  cmd = 'lazygit',
+  direction = 'float',
+  id = 2,
+  on_open = function(term)
+    if vim.fn.maparg('<esc><esc>', 't') ~= '' then
+      unmap('t', '<esc><esc>')
+    end
+  end,
+  on_close = function(term)
+    if not vim.fn.maparg('<esc>', 't') == '' then
+      map('t', '<esc><esc>', '<C-\\><C-n>:q<CR>', { desc = 'Kill terminal' })
+    end
+  end,
+  display_name = 'Lazygit Term',
+}
 terminalMap[2] = lazygitTerm
-map('n', '<leader>tt', function ()
+map('n', '<leader>tt', function()
   mainTerm:toggle()
 end, { desc = '[T]oggle the main [t]erminal', silent = true, noremap = true })
 
-map('n', '<leader>tl', function ()
+map('n', '<leader>tl', function()
   lazygitTerm:toggle()
 end, { desc = '[T]oggle the [l]azygit terminal', silent = true, noremap = true })
 
-local postingTerm = Terminal:new({ cmd = "posting", direction = "float", id = 3, display_name = "Posting Term" })
+local postingTerm = Terminal:new { cmd = 'posting', direction = 'float', id = 3, display_name = 'Posting Term' }
 terminalMap[3] = postingTerm
 
-map('n', '<leader>tp', function ()
+map('n', '<leader>tp', function()
   postingTerm:toggle()
 end, { desc = '[T]oggle the [p]osting terminal', silent = true, noremap = true })
 
 map('n', '<leader>tn', function()
   local newTermId = getFirstNil()
-  local newTermName = string.format("Regular Terminal %d", newTermId)
+  local newTermName = string.format('Regular Terminal %d', newTermId)
   print(newTermName)
   local newTerm = newNormalTerm(newTermId, newTermName, closeAndClean)
   Terminal:new(newTerm):open()
   terminalMap[newTermId] = newTerm
 end, { desc = '[T]oggle a [n]ew terminal', silent = true, noremap = true })
 
-map('n', '<leader>to', function ()
-  local plenTable = plenaryWindow.centered({
-    width = math.floor(vim.api.nvim_get_option_value("columns", {}) * 0.6),
-    height = math.floor(vim.api.nvim_get_option_value("lines", {}) * 0.4),
-    border = "rounded"
-  })
+map('n', '<leader>to', function()
+  local plenTable = plenaryWindow.centered {
+    width = math.floor(vim.api.nvim_get_option_value('columns', {}) * 0.6),
+    height = math.floor(vim.api.nvim_get_option_value('lines', {}) * 0.4),
+    border = 'rounded',
+  }
   local buf = plenTable.bufnr
   local terminalMapArr = {}
   for index, value in ipairs(terminalMap) do
-    terminalMapArr[index] = string.format("Index: %d, value: %s", index, value.display_name)
+    terminalMapArr[index] = string.format('Index: %d, value: %s', index, value.display_name)
   end
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, terminalMapArr)
 end, { desc = 'Display [t]erminals [o]pened', silent = true, noremap = true })
