@@ -651,6 +651,13 @@ require('lazy').setup({
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
     },
+    opts = {
+      setup = {
+        rust_analyzer = function()
+          return true
+        end,
+      },
+    },
     config = function()
       -- Brief aside: **What is LSP?**
       --
@@ -827,6 +834,9 @@ require('lazy').setup({
         automatic_installation = true,
         handlers = {
           function(server_name)
+            if server_name == 'rust_analyzer' then
+              return
+            end
             local server = servers[server_name] or {}
             -- This handles overriding only values explicitly passed
             -- by the server configuration above. Useful when disabling
