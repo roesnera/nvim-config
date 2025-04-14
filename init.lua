@@ -921,6 +921,34 @@ require('lazy').setup({
           --     require('luasnip.loaders.from_vscode').lazy_load()
           --   end,
           -- },
+          {
+              'chrisgrieser/nvim-scissors',
+              dependencies = {
+                'nvim-telescope/telescope.nvim',
+                {
+                  'L3MON4D3/LuaSnip',
+                  build = 'make install_jsregexp',
+                },
+              },
+              opts = {
+                snippetDir = '~/.config/nvim/snippets',
+              },
+              keys = {
+                {
+                  '<leader>sa',
+                  ':ScissorsAddNewSnippet<CR>',
+                  desc = '[A]dd a new [s]nippet',
+                },
+                {
+                  '<leader>se',
+                  ':ScissorsEditSnippet<CR>',
+                  desc = '[E]dit a [s]nippet',
+                },
+              },
+              config = function ()
+                require('luasnip.loaders.from_vscode').lazy_load({paths = '~/.config/nvim/snippets'})
+              end
+          }
         },
       },
       'saadparwaiz1/cmp_luasnip',
