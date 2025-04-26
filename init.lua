@@ -1255,9 +1255,16 @@ end, { desc = '[T]oggle the [l]azygit terminal', silent = true, noremap = true }
 local postingTerm = Terminal:new { cmd = 'posting', direction = 'float', id = 3, display_name = 'Posting Term' }
 terminalMap[3] = postingTerm
 
+local floatingTerm = Terminal:new { direction = 'float', id = 4, display_name = 'Floating Term' }
+terminalMap[4] = floatingTerm
+
 map('n', '<leader>tp', function()
   postingTerm:toggle()
 end, { desc = '[T]oggle the [p]osting terminal', silent = true, noremap = true })
+
+map('n', '<leader>tf', function()
+  floatingTerm:toggle()
+end, { desc = '[T]oggle the [f]loating terminal', silent = true, noremap = true })
 
 map('n', '<leader>tn', function()
   local newTermId = getFirstNil()

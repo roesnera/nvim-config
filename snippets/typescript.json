@@ -1,1 +1,1 @@
-{"ts-comment-header":{"prefix":"ts-comment-header","body":["/**************************************************"," * ${1:Title} *"," **************************************************/"]}}
+{"ts-comment-header":{"prefix":"ts-comment-header","body":["/**************************************************"," * ${1:Title} *"," **************************************************/"]},"expAllNamed":{"body":"export * as ${1:Name} from './${2:Dir}'","prefix":"expAllNamed"},"export-all":{"body":"export * from './${1:Dir}'","prefix":"expAll"}}
