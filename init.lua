@@ -557,6 +557,24 @@ require('lazy').setup({
         -- },
         -- pickers = {}
         extensions = {
+          undo = {
+            require('telescope-undo'),
+            mappings = {
+              i = {
+                ["<cr>"] = require("telescope-undo.actions").yank_additions,
+                ["<S-cr>"] = require("telescope-undo.actions").yank_deletions,
+                ["<C-cr>"] = require("telescope-undo.actions").restore,
+                -- alternative defaults, for users whose terminals do questionable things with modified <cr>
+                ["<C-y>"] = require("telescope-undo.actions").yank_deletions,
+                ["<C-r>"] = require("telescope-undo.actions").restore,
+              },
+              n = {
+                ["y"] = require("telescope-undo.actions").yank_additions,
+                ["Y"] = require("telescope-undo.actions").yank_deletions,
+                ["u"] = require("telescope-undo.actions").restore,
+              },
+            },
+          },
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
           },
@@ -581,6 +599,7 @@ require('lazy').setup({
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
       pcall(require('telescope').load_extension, 'harpoon')
+      pcall(require('telescope').load_extension, 'undo')
       pcall(map, 'n', '<leader>sh', ':Telescope harpoon marks<CR>', { desc = '[S]earch [h]arpoon marks' })
 
       -- See `:help telescope.builtin`
@@ -593,6 +612,7 @@ require('lazy').setup({
       map('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       map('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       map('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
+      map('n', '<leader>su', '<cmd>Telescope undo<CR>', { desc = '[S]earch [U]ndo tree' })
       map('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       map('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
