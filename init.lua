@@ -1025,16 +1025,6 @@ local function newNormalTerm(id, direction, name, close_on_exit, on_close_fn)
   }
 end
 
-local function closeAndClean(term)
-  local id = term.id
-  terminalMap[id] = nil
-end
-
-local function getFirstNil()
-  local ind = #terminalMap
-  return ind + 1
-end
-
 local mainTerm = Terminal:new(newNormalTerm(1, 'horizontal', 'Main Term', true))
 terminalMap[1] = mainTerm
 local lazygitTerm = Terminal:new {
@@ -1075,15 +1065,6 @@ end, { desc = '[T]oggle the [p]osting terminal', silent = true, noremap = true }
 map('n', '<leader>tf', function()
   floatingTerm:toggle()
 end, { desc = '[T]oggle the [f]loating terminal', silent = true, noremap = true })
-
-map('n', '<leader>tn', function()
-  local newTermId = getFirstNil()
-  local newTermName = string.format('Regular Terminal %d', newTermId)
-  print(newTermName)
-  local newTerm = newNormalTerm(newTermId, 'horizontal', newTermName, true, closeAndClean)
-  Terminal:new(newTerm):open()
-  terminalMap[newTermId] = newTerm
-end, { desc = '[T]oggle a [n]ew terminal', silent = true, noremap = true })
 
 map('n', '<leader>to', function()
   local plenTable = plenaryWindow.centered {
