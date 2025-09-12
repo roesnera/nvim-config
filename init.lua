@@ -627,13 +627,10 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         -- clangd = {},
-        gopls = {},
-        pyright = {},
         rust_analyzer = {},
         angularls = {},
         dockerls = {},
         html = {},
-        ast_grep = {},
 
         lua_ls = {
           Lua = {
@@ -660,7 +657,7 @@ require('lazy').setup({
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
-        ensure_installed = { 'gopls', 'pyright', 'rust_analyzer', 'angularls', 'dockerls', 'html', 'ast_grep', 'lua_ls' },
+        ensure_installed = { 'rust_analyzer', 'angularls', 'dockerls', 'html', 'lua_ls' },
         automatic_installation = true,
         handlers = {
           function(server_name)
