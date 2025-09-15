@@ -1058,9 +1058,9 @@ terminalMap[3] = postingTerm
 local floatingTerm = Terminal:new(newNormalTerm(4, 'float', 'Floating Term'))
 terminalMap[4] = floatingTerm
 
-map('n', '<leader>tp', function()
+map('n', '<leader>tP', function()
   postingTerm:toggle()
-end, { desc = '[T]oggle the [p]osting terminal', silent = true, noremap = true })
+end, { desc = '[T]oggle the [P]osting terminal', silent = true, noremap = true })
 
 map('n', '<leader>tf', function()
   floatingTerm:toggle()
@@ -1079,6 +1079,11 @@ map('n', '<leader>to', function()
   end
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, terminalMapArr)
 end, { desc = 'Display [t]erminals [o]pened', silent = true, noremap = true })
+
+map('n', '<leader>tN', ':tabnew<CR>', { desc = 'Create a [N]ew [t]ab' })
+map('n', '<leader>tn', ':tabn<CR>', { desc = 'Move to [n]ext [t]ab' })
+map('n', '<leader>tp', ':tabp<CR>', { desc = 'Move to [p]revious [t]ab' })
+map('n', '<leader>tc', ':tabclose<CR>', { desc = '[C]lose current [t]ab' })
 --#endregion
 
 vim.api.nvim_create_user_command('O', 'Oil', {})
