@@ -100,11 +100,6 @@ map('n', '<leader>jb', function()
   vim.cmd 'normal! ]}'
 end, { desc = '[J]ump to the [b]ottom of the current block', silent = true, noremap = true })
 
-P = function(v)
-  print(vim.inspect(v))
-  return v
-end
-
 local function is_fold_on_current_line()
   local current_line = vim.fn.line '.'
   local fold_level = vim.fn.foldlevel(current_line)
@@ -940,6 +935,27 @@ require('lazy').setup({
         --  the list of additional_vim_regex_highlighting and disabled languages for indent.
         additional_vim_regex_highlighting = { 'ruby' },
       },
+      incremental_selection = {
+        enable = true,
+      },
+      playground = {
+        enable = true,
+        disable = {},
+        updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+        persist_queries = false, -- Whether the query persists across vim sessions
+        keybindings = {
+          toggle_query_editor = 'o',
+          toggle_hl_groups = 'i',
+          toggle_injected_languages = 't',
+          toggle_anonymous_nodes = 'a',
+          toggle_language_display = 'I',
+          focus_language = 'f',
+          unfocus_language = 'F',
+          update = 'R',
+          goto_node = '<cr>',
+          show_help = '?',
+        },
+      },
       indent = { enable = true, disable = { 'ruby' } },
     },
     -- There are additional nvim-treesitter modules that you can use to interact
@@ -950,7 +966,7 @@ require('lazy').setup({
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
   {
-    'nvim-treesitter',
+    'nvim-treesitter/playground',
   },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
@@ -1000,6 +1016,11 @@ require('lazy').setup({
     },
   },
 })
+
+local treesitter_fns = require('treesitter-fns')
+
+treesitter_fns.setup()
+map('n', '<leader>qh', treesitter_fns.get_node_at_cursor, { desc = 'custom fn' })
 
 --#region ToggleTerm related keymaps
 local plenaryWindow = require 'plenary.window.float'
