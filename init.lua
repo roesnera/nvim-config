@@ -501,13 +501,6 @@ require('lazy').setup({
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
     },
-    opts = {
-      setup = {
-        rust_analyzer = function()
-          return true
-        end,
-      },
-    },
     config = function()
       --  This function gets run when an LSP attaches to a particular buffer.
       --    That is to say, every time a new file is opened that is associated with
@@ -652,7 +645,7 @@ require('lazy').setup({
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
-        ensure_installed = { 'rust_analyzer', 'angularls', 'dockerls', 'html', 'lua_ls' },
+        ensure_installed = { 'rust', 'toml', 'angularls', 'dockerls', 'html', 'lua_ls' },
         automatic_installation = true,
         handlers = {
           function(server_name)
