@@ -230,6 +230,13 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 
 vim.cmd [[autocmd BufWritePre <buffer> lua vim.lsp.buf.format()]]
 
+vim.cmd('filetype on')
+vim.filetype.add({
+  extension = {
+    rs = 'rust'
+  }
+})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -501,6 +508,13 @@ require('lazy').setup({
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
     },
+    opts = {
+      setup = {
+        rust_analyzer = function()
+          return true
+        end,
+      },
+    },
     config = function()
       --  This function gets run when an LSP attaches to a particular buffer.
       --    That is to say, every time a new file is opened that is associated with
@@ -647,9 +661,14 @@ require('lazy').setup({
       require('mason-lspconfig').setup {
         ensure_installed = { 'clangd', 'rust', 'toml', 'angularls', 'dockerls', 'html', 'lua_ls' },
         automatic_installation = true,
+        automatic_enable = {
+          exclude = {
+            "rust_analyzer"
+          }
+        },
         handlers = {
           function(server_name)
-            if server_name == 'rust_analyzer' then
+            if server_name == 'rust_analyzer' or server_name == 'rust-analyzer' then
               return
             end
             local server = servers[server_name] or {}
