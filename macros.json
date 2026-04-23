@@ -1,0 +1,24 @@
+{
+  "macros": [
+    {
+      "name": "Mark inside block",
+      "raw": "W3tqbXpdfWtteA==",
+      "content": "[{jmz]}kmx"
+    },
+    {
+      "name": "Select inside block",
+      "raw": "J3pWJ3g=",
+      "content": "'zV'x"
+    },
+    {
+      "name": "Combined no comp FHIR search params cleanup",
+      "raw": "QG1AbjpzL1xuXihcKC4qXCkpLiovIFJlZmVyZW5jZTxcMT4NQG1AbjpzL15cKFxTKlwpLipcKFJlZmVyZW5jZTwuKj5cKS8gICdcMSc6IFwyDUBtQG46cy9eXChcUypcKVx0WyBdKmRhdGUuKi8gICdcMSc6IFI0RmhpckRhdGVUaW1lDUBtQG46cy9cKFxTKlwpXHRbIF0qdG9rZW4uKi8gICdcMSc6IFRva2VuDUBtQG46cy9eXChcd1xTKlwpLiovICAnXDEnOiBzdHJpbmcNQG1AbjpzLywvIHwvZw1AbUBuOnMvUmVmZXJlbmNlPEFueT4vUmVmZXJlbmNlPERvbWFpblJlc291cmNlPg0=",
+      "content": "@m@n:s/\\n^(\\(.*\\)).*/<Space>Reference<lt>\\1><CR>@m@n:s/^\\(\\S*\\).*\\(Reference<lt>.*>\\)/<Space><Space>'\\1':<Space>\\2<CR>@m@n:s/^\\(\\S*\\)\\t[<Space>]*date.*/<Space><Space>'\\1':<Space>R4FhirDateTime<CR>@m@n:s/\\(\\S*\\)\\t[<Space>]*token.*/<Space><Space>'\\1':<Space>Token<CR>@m@n:s/^\\(\\w\\S*\\).*/<Space><Space>'\\1':<Space>string<CR>@m@n:s/,/<Space>|/g<CR>@m@n:s/Reference<lt>Any>/Reference<lt>DomainResource><CR>"
+    },
+    {
+      "name": "Combined comp FHIR resource search params",
+      "raw": "QG46cy9eXChcUypcKVx0WyBdKltjQ11vbXBvc2l0ZS4qXChcKFxuICBbXlx0XSpcKSpcKS4qLyAgJ1wxJzogQ29tcG9zaXRlPHtcMlxyfT4NQG46cy9eICBcKFteJ11cUypcKTouKi8gICAgJ1wxJzogc3RyaW5nDUBuOnMvXn0+JC8gIH0+DQ==",
+      "content": "@n:s/^\\(\\S*\\)\\t[<Space>]*[cC]omposite.*\\(\\(\\n<Space><Space>[^\\t]*\\)*\\).*/<Space><Space>'\\1':<Space>Composite<lt>{\\2\\r}><CR>@n:s/^<Space><Space>\\([^']\\S*\\):.*/<Space><Space><Space><Space>'\\1':<Space>string<CR>@n:s/^}>$/<Space><Space>}><CR>"
+    }
+  ]
+}
