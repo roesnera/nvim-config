@@ -161,22 +161,48 @@ ins_left {
 ins_left {
   -- Lsp server name .
   function()
-    local msg = 'No Active Lsp'
+    local msg = ''
     -- local buf_ft = vim.api.nvim_buf_get_option(0, 'filetype')
-    local buf_ft = vim.filetype.match({ buf = 0 })
+    local buf_ft = vim.filetype.match { buf = 0 }
     local clients = vim.lsp.get_clients()
     if next(clients) == nil then
-      return msg
+      return 'No Active Lsp'
     end
     for _, client in ipairs(clients) do
       local filetypes = client.config.filetypes
       if filetypes and vim.fn.index(filetypes, buf_ft) ~= -1 then
-        return client.name
+        if msg == '' then
+          msg = client.name
+        else
+          msg = msg .. ', ' .. client.name
+        end
       end
     end
     return msg
   end,
-  icon = ' LSP:',
+  icon = '  LSP:',
+  color = { fg = '#ffffff', gui = 'bold' },
+}
+
+ins_left {
+  function()
+    local msg = ''
+    local formatters = require('conform').list_formatters(0)
+    if next(formatters) == nil then
+      return 'No active formatter'
+    end
+    for _, formatter in ipairs(formatters) do
+      if formatter.available then
+        if msg == '' then
+          msg = formatter.command
+        else
+          msg = msg .. ', ' .. formatter.command
+        end
+      end
+    end
+    return msg
+  end,
+  icon = '⚘ Active Formatters:',
   color = { fg = '#ffffff', gui = 'bold' },
 }
 
