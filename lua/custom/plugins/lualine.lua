@@ -22,6 +22,9 @@ local conditions = {
   hide_in_width = function()
     return vim.fn.winwidth(0) > 80
   end,
+  buf_wide = function()
+    return vim.fn.winwidth(0) > 150
+  end,
   check_git_workspace = function()
     local filepath = vim.fn.expand '%:p:h'
     local gitdir = vim.fn.finddir('.git', filepath .. ';')
@@ -180,6 +183,7 @@ ins_left {
     end
     return msg
   end,
+  cond = conditions.buf_wide,
   icon = '  LSP:',
   color = { fg = '#ffffff', gui = 'bold' },
 }
@@ -203,6 +207,7 @@ ins_left {
     return msg
   end,
   icon = '⚘ Active Formatters:',
+  cond = conditions.buf_wide,
   color = { fg = '#ffffff', gui = 'bold' },
 }
 
