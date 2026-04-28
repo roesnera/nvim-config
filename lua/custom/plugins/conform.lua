@@ -9,6 +9,8 @@ return {
         rust = { 'rustfmt', lsp_format = 'fallback' },
         javascript = { 'prettierd' },
         typescript = { 'prettierd' },
+        html = { 'prettierd' },
+        htmlangular = { 'prettierd' },
       },
       format_on_save = {
         timeout_ms = 500,
