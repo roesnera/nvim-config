@@ -86,6 +86,13 @@ ins_left {
 }
 
 ins_left {
+  function()
+    return '%{ObsessionStatus()}'
+  end,
+  padding = { left = 0, right = 1 }, -- We don't need space before this
+}
+
+ins_left {
   -- mode component
   function()
     return ''
