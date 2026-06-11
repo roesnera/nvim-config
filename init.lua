@@ -670,7 +670,11 @@ require('lazy').setup({
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
-
+  {
+    'chrisgrieser/nvim-lsp-endhints',
+    event = 'LspAttach',
+    opts = {}, -- required, even if empty
+  },
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
     config = function()
@@ -754,6 +758,11 @@ require('lazy').setup({
         end,
       })
     end,
+  },
+  {
+    'alexpasmantier/krust.nvim',
+    ft = 'rust',
+    lazy = false,
   },
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
@@ -869,6 +878,21 @@ map('n', '<leader>tc', ':tabclose<CR>', { desc = '[C]lose current [t]ab' })
 --#endregion
 
 vim.api.nvim_create_user_command('O', 'Oil', {})
+
+vim.api.nvim_create_user_command('Exec', function(args)
+  print(vim.inspect(args))
+  local plenTable = plenaryWindow.centered {
+    width = math.floor(vim.api.nvim_get_option_value('columns', {}) * 0.6),
+    height = math.floor(vim.api.nvim_get_option_value('lines', {}) * 0.4),
+    border = 'rounded',
+  }
+  local buf = plenTable.bufnr
+  local argsArr = {}
+  for index, value in ipairs(args) do
+    argsArr[index] = string.format('Index: %d, value: %s', index, value.display_name)
+  end
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, argsArr)
+end, {})
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
